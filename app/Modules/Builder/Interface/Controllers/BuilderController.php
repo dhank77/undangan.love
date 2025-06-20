@@ -20,6 +20,25 @@ class BuilderController extends Controller
 
     public function index(Request $request): Response
     {
+        $templateId = $request->get('template_id');
+        $builderId = $request->get('builder_id');
+        
+        if ($templateId || $builderId) {
+            $builder = null;
+            if ($builderId) {
+                $builder = $this->builderService->getById($builderId);
+                if ($builder) {
+                    $builder->load(['template']);
+                }
+            }
+            
+            return Inertia::render('builder/index', [
+                'builder' => $builder,
+                'template_id' => $templateId ? (int)$templateId : null,
+            ]);
+        }
+        
+        // Jika tidak ada parameter, tampilkan daftar builders
         $builders = $this->builderService->getAllByUser(
             $request->user()->id,
             $request->get('per_page', 10)
@@ -38,8 +57,9 @@ class BuilderController extends Controller
             abort(404);
         }
 
-        return Inertia::render('builder/editor', [
-            'builder' => $builder->load(['template'])
+        return Inertia::render('builder/index', [
+            'builder' => $builder->load(['template']),
+            'template_id' => $builder->template_id
         ]);
     }
 

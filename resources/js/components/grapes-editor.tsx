@@ -141,7 +141,7 @@ export default function GrapesEditor({
                                 property: 'font-size',
                                 type: 'select',
                                 defaults: '32px',
-                                options: [
+˝                                options: [
                                     { id: 'tiny', value: '12px', name: 'Tiny' },
                                     { id: 'medium', value: '18px', name: 'Medium' },
                                     { id: 'big', value: '32px', name: 'Big' },
@@ -156,7 +156,6 @@ export default function GrapesEditor({
             },
         });
 
-        // Set initial content
         if (htmlContent) {
             editorInstance.current.setComponents(htmlContent);
         }
@@ -164,7 +163,6 @@ export default function GrapesEditor({
             editorInstance.current.setStyle(cssContent);
         }
 
-        // Listen for changes
         editorInstance.current.on('storage:end', () => {
             if (onUpdate) {
                 const html = editorInstance.current.getHtml();
@@ -173,7 +171,6 @@ export default function GrapesEditor({
             }
         });
 
-        // Auto-save on component changes
         editorInstance.current.on('component:update', () => {
             if (onUpdate) {
                 const html = editorInstance.current.getHtml();

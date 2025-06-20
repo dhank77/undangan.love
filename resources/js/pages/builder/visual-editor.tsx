@@ -30,7 +30,7 @@ interface VisualEditorPageProps {
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Dashboard', href: '/dashboard' },
     { title: 'Builder', href: '/builder' },
-    { title: 'Visual Editor', href: '' },
+    { title: 'Visual Editor', href: '#' },
 ];
 
 export default function VisualEditor({ builder, template, template_id }: VisualEditorPageProps) {

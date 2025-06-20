@@ -2,7 +2,7 @@
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router } from '@inertiajs/react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 interface Template {
     id: number;
@@ -42,6 +42,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function BuilderIndex({ builder, template_id }: BuilderPageProps) {
+    console.log('Component mounted with:', { builder, template_id }); // Log saat component mount
     const [formData, setFormData] = useState({
         name: builder?.name || '',
         bride_name: builder?.custom_data_json?.bride_name || '',
@@ -57,14 +58,7 @@ export default function BuilderIndex({ builder, template_id }: BuilderPageProps)
     const [isSaving, setIsSaving] = useState(false);
     const [builderId, setBuilderId] = useState(builder?.id);
 
-    useEffect(() => {
-        if (!builder && template_id) {
-            // Create new builder with template
-            createBuilder();
-        }
-    }, []);
-
-    const createBuilder = async () => {
+    const createBuilder = useCallback(async () => {
         try {
             const response = await fetch('/builder', {
                 method: 'POST',
@@ -78,16 +72,33 @@ export default function BuilderIndex({ builder, template_id }: BuilderPageProps)
                     custom_data_json: formData,
                 }),
             });
+
+            console.log(response);
             
             if (response.ok) {
                 const newBuilder = await response.json();
                 setBuilderId(newBuilder.id);
+                
                 router.visit(`/builder/${newBuilder.id}`, { replace: true });
             }
         } catch (error) {
             console.error('Error creating builder:', error);
         }
-    };
+    }, [template_id, formData]); // Add dependencies that the function uses
+
+    useEffect(() => {
+        console.log('useEffect triggered with:', { builder, template_id });
+        
+        if (!builder && template_id) {
+            console.log('Calling createBuilder...');
+            createBuilder();
+        } else {
+            console.log('Skipping createBuilder because:', { 
+                hasBuilder: !!builder, 
+                hasTemplateId: !!template_id 
+            });
+        }
+    }, [template_id, builder, createBuilder]);
 
     const handleInputChange = (field: string, value: string) => {
         setFormData(prev => ({ ...prev, [field]: value }));
